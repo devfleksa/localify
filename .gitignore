@@ -1,0 +1,20 @@
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+uploads/
+web/data/
+.next/
+
+# Local scratch (logo drafts, test images)
+.work/
+test-images/
+
+# Local only: a second design skill and the design skill's working files (except Localify's direction)
+.claude/skills/redesign-existing-projects/
+.taste-skill/*
+!.taste-skill/direction.json

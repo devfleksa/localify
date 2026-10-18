@@ -1,0 +1,12 @@
+# One-command run: `cd web && npm run setup` (or copy web/.env.example to web/.env.local), then
+# `docker compose up --build` and open http://localhost:3000 (another port: PORT=3200 docker compose up).
+# Jobs, imports and results are kept in web/data.
+services:
+  web:
+    build: ./web
+    env_file: web/.env.local
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - ./web/data:/app/data
+    restart: unless-stopped

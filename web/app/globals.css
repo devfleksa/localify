@@ -1,0 +1,235 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Palette "Green-black and bone" (design direction 2026-10-15): bone type on green-black, surfaces one tone
+   step apart (no lines, no shadows at rest), pale jade only for the main action and live/working states.
+   The posts themselves supply the colour. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-work-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  /* Tone steps: deep (sidebar) < background < raised (panels) < lift (controls, hover) */
+  --color-deep: var(--deep);
+  --color-raised: var(--raised);
+  --color-lift: var(--lift);
+  /* Meaning colours: protect = avoids a cultural mistake, resonate = local touch, text = tier A, review = a person decides */
+  --color-protect: var(--protect);
+  --color-resonate: var(--resonate);
+  --color-textual: var(--textual);
+  --color-ok: var(--ok);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+:root,
+.dark {
+  --radius: 10px; /* read by the Sonner toasts */
+  --deep: #111614;
+  --background: #161c1a;
+  --raised: #1d2522;
+  --lift: #26302d;
+  --foreground: #e3e2da;
+  --card: #1d2522;
+  --card-foreground: #e3e2da;
+  --popover: #26302d;
+  --popover-foreground: #e3e2da;
+  --primary: #9fc7b8;
+  --primary-foreground: #121816;
+  --secondary: #26302d;
+  --secondary-foreground: #e3e2da;
+  --muted: #26302d;
+  --muted-foreground: #959b94;
+  --accent: #2c3733;
+  --accent-foreground: #e3e2da;
+  --destructive: #e3907f;
+  --border: #2c3733;
+  --input: #34403b;
+  --ring: #9fc7b8;
+  --sidebar: #111614;
+  --sidebar-foreground: #e3e2da;
+  --sidebar-primary: #9fc7b8;
+  --sidebar-primary-foreground: #121816;
+  --sidebar-accent: #1d2522;
+  --sidebar-accent-foreground: #e3e2da;
+  --sidebar-border: #2c3733;
+  --sidebar-ring: #9fc7b8;
+  --protect: #dcc08e;
+  --resonate: #dfa3a0;
+  --textual: #a9c1d9;
+  --ok: #9fc7b8;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "tnum" 0;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 35%, transparent);
+  }
+  /* Thin, quiet scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--lift) transparent;
+  }
+}
+
+/* ---------- Motion ---------- */
+
+/* Working text: a slow highlight sweeps across the words while the agent works. */
+@utility shimmer-text {
+  color: color-mix(in oklab, var(--foreground) 55%, transparent);
+  background: linear-gradient( /* taste-skill-ignore: requested shimmer */
+      100deg,
+      transparent 0%,
+      transparent 40%,
+      var(--foreground) 50%,
+      transparent 60%,
+      transparent 100%
+    )
+    0 0 / 250% 100% no-repeat text; /* taste-skill-ignore: shimmer text */
+  -webkit-background-clip: text; /* taste-skill-ignore: shimmer text */
+  animation: shimmer-sweep 2.2s linear infinite;
+}
+
+/* Working surface: a soft band of light passes over a placeholder (scanning, generating). */
+@utility shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient( /* taste-skill-ignore: requested shimmer */
+      100deg,
+      transparent 20%,
+      color-mix(in oklab, var(--foreground) 9%, transparent) 50%,
+      transparent 80%
+    );
+    transform: translateX(-100%);
+    animation: shimmer-pass 1.6s var(--ease-in-out) infinite;
+  }
+}
+
+@keyframes shimmer-sweep {
+  from { background-position: 150% 0; }
+  to { background-position: -100% 0; }
+}
+@keyframes shimmer-pass {
+  to { transform: translateX(100%); }
+}
+
+/* Entrance: rise into place, staggered by --i. */
+@utility rise {
+  animation: rise-in 640ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+/* Masked line reveal for the one big headline per screen. */
+@utility mask-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+  & > span {
+    display: block;
+    animation: line-up 900ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 110ms + 120ms);
+  }
+}
+@keyframes line-up {
+  from { transform: translateY(105%); }
+}
+
+/* A live dot: the job is running. */
+@utility pulse-dot {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: inherit;
+    animation: pulse-ring 1.8s var(--ease-out) infinite;
+  }
+}
+@keyframes pulse-ring {
+  from { transform: scale(1); opacity: 0.6; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* Press feedback on anything clickable that isn't a <Button>. */
+@utility press {
+  transition: transform 140ms var(--ease-out), background-color 180ms ease, color 180ms ease, opacity 180ms ease;
+  &:active:not(:disabled) { transform: scale(0.97); }
+}
+
+/* Expand/collapse a step without measuring: grid rows 0fr → 1fr. */
+@utility unfold {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 420ms var(--ease-out), opacity 300ms ease;
+  & > * { min-height: 0; overflow: hidden; }
+  &[data-open="true"] { grid-template-rows: 1fr; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+  .shimmer::after { display: none; }
+}
+
+@keyframes shake {
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
